@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
+
+
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
+  --background: #191919;
+  --foreground: #ffffff;
 
   --gray-100: #9b9b9b;
   --gray-200: #2e2e2e;
@@ -16,9 +18,11 @@
   --blue: #0075de;
   --hover-blue: #097ee8;
 
+  --red: #eb5757;
 
 }
 
+/* Sidebar */
 .text-sidebar {
   color: var(--gray-100);
 }
@@ -34,6 +38,22 @@
 .border-sidebar {
   border-right: 1px solid var(--gray-200);
 }
+
+.logout-button {
+  background-color: var(--background);
+}
+
+.logout-button:hover {
+  color: var(--red);
+  background-color: var(--gray-200);
+}
+
+.dropdown {
+  border: 1px solid var(--gray-200);
+  background-color: var(--gray-300);
+}
+
+/* Sign in and Sign up Form */
 
 .button-blue {
   background-color: var(--blue);
@@ -64,12 +84,7 @@
   background-color: var(--smoke-200);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #191919;
-    --foreground: #ffffff;
-  }
-}
+
 
 body {
   background: var(--background);
