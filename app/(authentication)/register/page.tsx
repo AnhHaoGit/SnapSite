@@ -89,7 +89,7 @@ export default function Page() {
 
       if (result?.ok) {
         toast.success("Signup successful!");
-        router.push("/workspace");
+        router.push("/workspace/home");
       } else {
         toast.error("Signup failed");
       }
@@ -103,7 +103,7 @@ export default function Page() {
   // GOOGLE SIGNUP
   const handleGoogleSignup = async (): Promise<void> => {
     setLoadingGoogle(true);
-    await signIn("google", { callbackUrl: "/workspace" });
+    await signIn("google", { callbackUrl: "/workspace/home" });
   };
 
   return (

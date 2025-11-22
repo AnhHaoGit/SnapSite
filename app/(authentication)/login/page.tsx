@@ -36,7 +36,7 @@ function LoginContent() {
     if (result?.ok) {
       toast.success("Login successful!");
       setLoading(false);
-      router.push("/workspace");
+      router.push("/workspace/home");
     } else {
       toast.error("Invalid email or password!");
       setLoading(false);
@@ -45,7 +45,7 @@ function LoginContent() {
 
   const handleGoogleLogin = async () => {
     setLoadingGoogle(true);
-    await signIn("google", { callbackUrl: "/workspace" });
+    await signIn("google", { callbackUrl: "/workspace/home" });
   };
 
   return (

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Home, Search, Trash2, Plus, ChevronDown } from "lucide-react";
+import { Home, Trash2, Plus, ChevronDown } from "lucide-react";
 import SidebarResizer from "@/components/workspace/Sidebar/SidebarResizer";
-import SidebarItem from "@/components/workspace/Sidebar/SidebarItem";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function Sidebar() {
   const [width, setWidth] = useState(300);
@@ -14,10 +15,14 @@ export default function Sidebar() {
 
   const { data: session } = useSession();
 
+  console.log(session);
+
   type User = {
     username?: string;
-    name?: string;
-    email?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    id?: string;
   };
 
   type Session = {
@@ -26,6 +31,29 @@ export default function Sidebar() {
 
   const username = (session as Session)?.user?.username ?? session?.user?.name;
   const email = (session as Session)?.user?.email;
+  const userId = (session as Session)?.user?.id;
+
+  const handleAddNewPage = async () => {
+    try {
+      const res = await fetch("/api/new_page", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Failed to create page");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
+  };
 
   return (
     <div
@@ -74,14 +102,32 @@ export default function Sidebar() {
         </AnimatePresence>
 
         {/* ---------- MENU ITEMS ---------- */}
-        <SidebarItem icon={<Search size={16} />} label="Search" />
-        <SidebarItem icon={<Home size={16} />} label="Home" />
+        <Link
+          href="/workspace/home"
+          className="flex items-center text-sidebar font-semibold gap-2 px-3 py-1 rounded-md hover:bg-hover-sidebar cursor-pointer"
+        >
+          <Home size={16} />
+          <span>Home</span>
+        </Link>
 
         <div className="px-2 pt-4 text-sidebar text-xs">Pages</div>
-        <SidebarItem icon={<Plus size={16} />} label="Add new" />
+
+        <button
+          onClick={handleAddNewPage}
+          className="flex items-center text-sidebar font-semibold gap-2 px-3 py-1 rounded-md hover:bg-hover-sidebar cursor-pointer"
+        >
+          <Plus size={16} />
+          <span>Add new</span>
+        </button>
 
         <div className="mt-auto pt-6">
-          <SidebarItem icon={<Trash2 size={16} />} label="Trash" />
+          <Link
+            href="/workspace/home"
+            className="flex items-center text-sidebar font-semibold gap-2 px-3 py-1 rounded-md hover:bg-hover-sidebar cursor-pointer"
+          >
+            <Trash2 size={16} />
+            <span>Trash</span>
+          </Link>
         </div>
       </div>
 
