@@ -1,10 +1,22 @@
+"use client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function Workspace() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (status === "unauthenticated" || !session) {
+      router.push("/login");
+    }
+  }, [status, router, session]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-4xl font-bold mb-4">Welcome to the Workspace!</h1>
-      <p className="text-lg mb-8">
-        This is where you can manage your projects and settings.
-      </p>
-    </div>
+    <main className="p-10 flex flex-col items-center justify-center">
+      <p className="font-bold text-4xl">Good Evening</p>
+    </main>
   );
 }

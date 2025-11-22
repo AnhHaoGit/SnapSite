@@ -3,11 +3,70 @@
 :root {
   --background: #ffffff;
   --foreground: #000000;
+
+  --gray-100: #9b9b9b;
+  --gray-200: #2e2e2e;
+  --gray-300: #202020;
+  --gray-400: #7d7975;
+
+  --smoke-100: #f5f4f2;
+  --smoke-200: #e6e5e3;
+  --smoke-300: #eae9e7;
+
+  --blue: #0075de;
+  --hover-blue: #097ee8;
+
+
+}
+
+.text-sidebar {
+  color: var(--gray-100);
+}
+
+.bg-sidebar {
+  background-color: var(--gray-300);
+}
+
+.hover\:bg-hover-sidebar:hover {
+  background-color: var(--gray-200);
+}
+
+.border-sidebar {
+  border-right: 1px solid var(--gray-200);
+}
+
+.button-blue {
+  background-color: var(--blue);
+}
+
+.button-blue:hover {
+  background-color: var(--hover-blue);
+}
+
+.border-form-input {
+  border: 1px solid var(--smoke-300);
+  border-radius: 8;
+}
+
+.border-form-button {
+  border: 1px solid var(--smoke-200);
+}
+
+.border-form-button:hover {
+  background-color: var(--smoke-100)
+}
+
+.form-text {
+  color: var(--gray-400)
+}
+
+.seperated-line {
+  background-color: var(--smoke-200);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #191919;
     --foreground: #ffffff;
   }
 }
