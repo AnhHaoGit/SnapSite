@@ -1,10 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/connect_db";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,13 +15,13 @@ export const authOptions = {
       async authorize(credentials) {
         const db = await connectDB();
         const user = await db.collection("users").findOne({
-          email: credentials.email,
+          email: credentials?.email,
         });
 
         if (!user) throw new Error("User not found");
 
         const isValid = await bcrypt.compare(
-          credentials.password,
+          credentials!.password,
           user.password
         );
 
@@ -36,22 +36,18 @@ export const authOptions = {
     }),
 
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
 
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
 
-  pages: {
-    signIn: "/login",
-  },
+  pages: { signIn: "/login" },
 
   callbacks: {
     async signIn({ user, account }) {
-      if (account.provider === "google") {
+      if (account?.provider === "google") {
         const db = await connectDB();
         const existingUser = await db
           .collection("users")
@@ -60,8 +56,8 @@ export const authOptions = {
         if (!existingUser) {
           await db.collection("users").insertOne({
             email: user.email,
-            image: user.image,
             username: user.name,
+            image: user.image,
           });
         }
       }
@@ -69,7 +65,6 @@ export const authOptions = {
       return true;
     },
 
-    // Save user data into token
     async jwt({ token, user, account }) {
       if (user) {
         if (account?.provider === "google") {
@@ -83,6 +78,7 @@ export const authOptions = {
             token.username = existingUser.username;
           }
         } else {
+          // For Credentials login, id is already available
           token.id = user.id;
           token.username = user.username;
         }
@@ -91,16 +87,13 @@ export const authOptions = {
       return token;
     },
 
-    // Save token into session for client use
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.username = token.username;
-
+      session.user.id = token.id as string;
+      session.user.username = token.username as string;
       return session;
     },
   },
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

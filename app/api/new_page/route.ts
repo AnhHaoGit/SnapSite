@@ -20,15 +20,21 @@ export async function POST(req: Request) {
 
     const db = await connectDB();
     const pagesCollection = db.collection("pages");
+    const date = new Date();
 
     const result = await pagesCollection.insertOne({
       title: "",
       userId: new ObjectId(body.userId),
-      createdAt: new Date(),
+      createdAt: date,
     });
 
     return NextResponse.json(
-      { message: "Page created", pageId: result.insertedId },
+      {
+        _id: result.insertedId,
+        title: "",
+        userId: body.userId,
+        createdAt: date,
+      },
       { status: 201 }
     );
   } catch (error: unknown) {

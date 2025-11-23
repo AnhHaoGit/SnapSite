@@ -31,6 +31,10 @@
   background-color: var(--gray-300);
 }
 
+.bg-sidebar-focus {
+  background-color: var(--gray-200);
+}
+
 .hover\:bg-hover-sidebar:hover {
   background-color: var(--gray-200);
 }

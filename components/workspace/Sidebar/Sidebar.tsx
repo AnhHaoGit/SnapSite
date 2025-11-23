@@ -1,34 +1,44 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Home, Trash2, Plus, ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Home, Trash2, Plus, ChevronDown, File } from "lucide-react";
 import SidebarResizer from "@/components/workspace/Sidebar/SidebarResizer";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useRouter, usePathname } from "next/navigation";
+import fetch_data from "@/lib/fetch_data";
+
+type Page = {
+  _id: string;
+  title: string;
+  userId: string;
+  createdAt: string;
+};
+
+type User = {
+  username?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  id?: string;
+};
+
+type Session = {
+  user?: User;
+};
 
 export default function Sidebar() {
-  const [width, setWidth] = useState(300);
+  const [width, setWidth] = useState(270);
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [pages, setPages] = useState<Page[]>([]);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
 
-  const { data: session } = useSession();
-
-  console.log(session);
-
-  type User = {
-    username?: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    id?: string;
-  };
-
-  type Session = {
-    user?: User;
-  };
-
+  // Infomation
   const username = (session as Session)?.user?.username ?? session?.user?.name;
   const email = (session as Session)?.user?.email;
   const userId = (session as Session)?.user?.id;
@@ -42,10 +52,13 @@ export default function Sidebar() {
           userId: userId,
         }),
       });
-
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Failed to create page");
+      if (!res.ok) throw new Error(data.error || "Failed to create new page");
+
+      setPages((prevPages) => [data, ...(prevPages || [])]);
+
+      router.push(`/workspace/${data._id}`);
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -54,6 +67,23 @@ export default function Sidebar() {
       }
     }
   };
+
+  useEffect(() => {
+    if (session && status === "authenticated") {
+      const loadPages = async () => {
+        try {
+          const data = await fetch_data(session);
+          setPages(data.pages ?? []);
+        } catch (err) {
+          console.error("Failed to load pages", err);
+          setPages([]);
+        }
+      };
+      loadPages();
+    } else {
+      setPages([]);
+    }
+  }, [session, status]);
 
   return (
     <div
@@ -67,7 +97,7 @@ export default function Sidebar() {
           onClick={() => setOpenDropdown((prev) => !prev)}
           className="p-2 w-full flex items-center justify-between text-white bg-sidebar hover:bg-[#2a2a2a] rounded transition"
         >
-          <span className="font-semibold whitespace-nowrap overflow-hidden text-ellipsis block">
+          <span className="font-semibold whitespace-nowrap overflow-hidden text-ellipsis block text-md">
             {username}&apos;s Workspace
           </span>{" "}
           <ChevronDown
@@ -104,13 +134,36 @@ export default function Sidebar() {
         {/* ---------- MENU ITEMS ---------- */}
         <Link
           href="/workspace/home"
-          className="flex items-center text-sidebar font-semibold gap-2 px-3 py-1 rounded-md hover:bg-hover-sidebar cursor-pointer"
+          className={`flex items-center gap-2 px-3 py-1 rounded-md hover:bg-hover-sidebar cursor-pointer ${
+            pathname === "/workspace/home"
+              ? "font-bold text-white bg-sidebar-focus"
+              : "font-semibold text-sidebar"
+          }`}
         >
           <Home size={16} />
           <span>Home</span>
         </Link>
 
         <div className="px-2 pt-4 text-sidebar text-xs">Pages</div>
+
+        {pages.map((page) => {
+          const isActive = pathname === `/workspace/${page._id}`;
+
+          return (
+            <Link
+              href={`/workspace/${page._id}`}
+              key={page._id}
+              className={`flex items-center gap-2 px-3 py-1 rounded-md hover:bg-hover-sidebar cursor-pointer transition ${
+                isActive
+                  ? "font-bold text-white bg-sidebar-focus"
+                  : "font-semibold text-sidebar"
+              }`}
+            >
+              <File size={16} />
+              <span>{page.title !== "" ? page.title : "New page"}</span>
+            </Link>
+          );
+        })}
 
         <button
           onClick={handleAddNewPage}

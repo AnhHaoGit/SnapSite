@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
   "include": [
     "next-env.d.ts",
@@ -28,7 +29,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-, "app/api/auth/[...nextauth]/route.js", "app/api/signup/route.js"  ],
+    "**/*.mts",
+    "app/api/auth/[...nextauth]/route.ts",
+    "app/api/signup/route.js"
+  ],
   "exclude": ["node_modules"]
 }

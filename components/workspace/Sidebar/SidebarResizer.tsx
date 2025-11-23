@@ -18,7 +18,7 @@ export default function SidebarResizer({
   const resize = (e: MouseEvent) => {
     if (!sidebarRef.current) return;
     const newWidth = e.clientX;
-    if (newWidth > 180 && newWidth < 500) {
+    if (newWidth > 180 && newWidth < 400) {
       setWidth(newWidth);
     }
   };

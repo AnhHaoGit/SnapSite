@@ -14,11 +14,9 @@ export default function Workspace() {
     }
   }, [status, router, session]);
 
-
-
   return (
     <main className="p-10 flex flex-col items-center justify-center">
-      <p className="font-bold text-4xl">Good Evening</p>
+      <p className="font-bold text-4xl">New Page</p>
     </main>
   );
 }
